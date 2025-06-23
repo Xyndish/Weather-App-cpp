@@ -76,28 +76,6 @@ int main() {
     const std::string apiKey = config["WEATHER_API_KEY"];
     httplib::Server svr;
 
-    // CORS
-    svr.Options("/weather", [](const httplib::Request& req, httplib::Response& res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-        res.set_header("Access-Control-Allow-Methods", "GET, OPTIONS");
-        res.set_header("Access-Control-Allow-Headers", "Content-Type");
-        res.status = 200;
-        });
-
-    svr.Get("/weather", [&](const httplib::Request& req, httplib::Response& res) {
-        res.set_header("Access-Control-Allow-Origin", "*");
-
-        if (!req.has_param("city")) {
-            res.status = 400;
-            res.set_content("{\"error\":\"Missing 'city' parameter\"}", "application/json");
-            return;
-        }
-
-        std::string city = req.get_param_value("city");
-        json result = getWeatherFromAPI(city, apiKey);
-        res.set_content(result.dump(4), "application/json");
-        });
-
     std::cout << "Server is running on http://localhost:8080" << std::endl;
     svr.listen("0.0.0.0", 8080);
     return 0;
